@@ -78,6 +78,7 @@ def _get_event_xy(ev):
 # via _pyside or _pyqt4 or _pyqt5
 QGLWidget = object
 QT5_NEW_API = False
+PYSIDE6_LEGACY_API = False
 PYSIDE6_API = False
 PYQT6_API = False
 if qt_lib == 'pyqt4':
@@ -117,6 +118,9 @@ elif qt_lib == 'pyside6':
         if Version(QT_VERSION_STR) >= Version('6.0.0'):
             from PySide6.QtOpenGLWidgets import QOpenGLWidget as QGLWidget
             from PySide6.QtGui import QSurfaceFormat as QGLFormat
+            PYSIDE6_LEGACY_API = True
+        if Version(QT_VERSION_STR) >= Version('6.4.0'):
+            PYSIDE6_LEGACY_API = False
             PYSIDE6_API = True
         else:
             from PySide6.QtOpenGL import QGLWidget, QGLFormat
@@ -278,11 +282,11 @@ def _set_config(c):
     glformat.setGreenBufferSize(c['green_size'])
     glformat.setBlueBufferSize(c['blue_size'])
     glformat.setAlphaBufferSize(c['alpha_size'])
-    if QT5_NEW_API or PYSIDE6_API:
+    if QT5_NEW_API or PYSIDE6_LEGACY_API:
         # Qt5 >= 5.4.0 - below options automatically enabled if nonzero.
         glformat.setSwapBehavior(glformat.DoubleBuffer if c['double_buffer']
                                  else glformat.SingleBuffer)
-    elif PYQT6_API:
+    elif PYQT6_API or PYSIDE6_API:
         glformat.setSwapBehavior(glformat.SwapBehavior.DoubleBuffer if c['double_buffer']
                                  else glformat.SwapBehavior.SingleBuffer)
     else:
