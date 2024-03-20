@@ -32,7 +32,6 @@ except ImportError:
             return res
         lut = {
             'objc': 'libobjc.dylib',
-            'quartz': 'Quartz.framework/Quartz'
         }
         return lut.get(name, name+'.framework/'+name)
     util.find_library = new_util_find_library
